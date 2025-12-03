@@ -19,19 +19,22 @@ def remove_wall(grid: List[List[Union[str, int]]], coord: Tuple[int, int]) -> Li
     """
 
     y, x = coord
-    rows, cols = len(grid), len(grid[0])
-    directions = []
+    y_remove, x_remove = y, x
+    cols = len(grid[0])
 
-    # вверх
-    if y - 2 > 0:
-        directions.append((-1, 0))
-    # вправо
-    if x + 2 < cols:
-        directions.append((0, 1))
+    decision = choice(("up", "right"))
+    if decision == "up" and 0 <= y - 2:
+        y_remove, x_remove = y - 1, x
+    else:
+        decision = "right"
 
-    if directions:
-        dy, dx = choice(directions)
-        grid[y + dy][x + dx] = " "
+    if decision == "right" and x + 2 < cols - 1:
+        y_remove, x_remove = y, x + 1
+    elif 0 <= y - 2 and x < cols - 1:
+        y_remove, x_remove = y - 1, x
+
+    grid[y_remove][x_remove] = " "
+
     return grid
 
 
@@ -46,9 +49,13 @@ def bin_tree_maze(rows: int = 15, cols: int = 15, random_exit: bool = True) -> L
     """
 
     grid = create_grid(rows, cols)
-    empty_cells = [(x, y) for x, row in enumerate(grid) for y, _ in enumerate(row) if x % 2 == 1 and y % 2 == 1]
-    for x, y in empty_cells:
-        grid[x][y] = " "
+    empty_cells = []
+    for x, row in enumerate(grid):
+        for y, _ in enumerate(row):
+            if x % 2 == 1 and y % 2 == 1:
+                grid[x][y] = " "
+                empty_cells.append((x, y))
+
     for cell in empty_cells:
         grid = remove_wall(grid, cell)
 
@@ -144,19 +151,22 @@ def encircled_exit(grid: List[List[Union[str, int]]], coord: Tuple[int, int]) ->
     :return: True если выход окружён стенами, иначе False
     """
 
+    rows = len(grid)
+    cols = len(grid[0])
     y, x = coord
-    rows, cols = len(grid), len(grid[0])
 
-    # угол всегда считается окружённым
-    if (y, x) in [(0, 0), (0, cols - 1), (rows - 1, 0), (rows - 1, cols - 1)]:
+    if (x, y) in [(0, 0), (0, cols - 1), (rows - 1, 0), (rows - 1, cols - 1)]:
         return True
 
-    # проверяем соседние клетки
-    for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-        ny, nx = y + dy, x + dx
-        if 0 <= ny < rows and 0 <= nx < cols and grid[ny][nx] == " ":
-            return False
-    return True
+    if (
+        (y == 0 and grid[y + 1][x] != " ")
+        or (x == cols - 1 and grid[y][x - 1] != " ")
+        or (y == rows - 1 and grid[y - 1][x] != " ")
+        or (x == 0 and grid[y][x + 1] != " ")
+    ):
+        return True
+
+    return False
 
 
 def solve_maze(
@@ -198,8 +208,7 @@ def solve_maze(
 
 
 def add_path_to_grid(
-    grid: List[List[Union[str, int]]],
-    path: Optional[Union[Tuple[int, int], List[Tuple[int, int]]]],
+    grid: List[List[Union[str, int]]], path: Optional[Union[Tuple[int, int], List[Tuple[int, int]]]]
 ) -> List[List[Union[str, int]]]:
     """
     Отмечает путь в лабиринте, заменяя клетки на "X".
