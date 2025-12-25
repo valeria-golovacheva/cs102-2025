@@ -100,6 +100,9 @@ def solve(grid: list[list[str]]) -> tp.Optional[list[list[str]]]:
 
 def check_solution(solution: list[list[str]]) -> bool:
     """Проверить корректность решения судоку."""
+    """Проверить корректность решения судоку."""
+    if solution is None:
+        return False
     for i in range(9):
         if set(solution[i]) != DIGITS:
             return False
