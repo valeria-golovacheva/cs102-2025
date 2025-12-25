@@ -19,7 +19,7 @@ def read_sudoku(path: tp.Union[str, pathlib.Path]) -> list[list[str]]:
 def create_grid(puzzle: str) -> list[list[str]]:
     """Создать двумерную сетку судоку из строки puzzle."""
     digits = [c for c in puzzle if c in "123456789."]
-    # добавить точки до 81 символа
+    # Заполняем недостающие элементы точками
     digits += ["."] * (81 - len(digits))
     return group(digits, 9)
 
@@ -47,9 +47,9 @@ def get_row(grid: list[list[str]], pos: tuple[int, int]) -> list[str]:
 
 
 def get_col(grid: list[list[str]], pos: tuple[int, int]) -> list[str]:
-    """Вернуть значения столбца судоку для позиции pos."""
+    """Вернуть столбец судоку для позиции pos."""
     _, col = pos
-    return [grid[row][col] for row in range(9)]
+    return [grid[row][col] for row in range(len(grid)) if col < len(grid[row])]
 
 
 def get_block(grid: list[list[str]], pos: tuple[int, int]) -> list[str]:
@@ -61,9 +61,9 @@ def get_block(grid: list[list[str]], pos: tuple[int, int]) -> list[str]:
 
 
 def find_empty_positions(grid: list[list[str]]) -> tp.Optional[tuple[int, int]]:
-    """Найти первую пустую ячейку в судоку и вернуть её координаты."""
-    for row in range(9):
-        for col in range(9):
+    """Найти первую пустую ячейку в судоку."""
+    for row in range(len(grid)):
+        for col in range(len(grid[row])):
             if grid[row][col] == ".":
                 return row, col
     return None
@@ -91,8 +91,7 @@ def solve(grid: list[list[str]]) -> tp.Optional[list[list[str]]]:
     return None
 
 
-def check_solution(solution: list[list[str]]) -> bool:
-    """Проверить корректность решения судоку."""
+def check_solution(solution: tp.Optional[list[list[str]]]) -> bool:
     """Проверить корректность решения судоку."""
     if solution is None:
         return False
@@ -107,7 +106,6 @@ def check_solution(solution: list[list[str]]) -> bool:
             block = [solution[r][c] for r in range(row, row + 3) for c in range(col, col + 3)]
             if set(block) != DIGITS:
                 return False
-
     return True
 
 
