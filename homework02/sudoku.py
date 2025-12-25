@@ -19,6 +19,8 @@ def read_sudoku(path: tp.Union[str, pathlib.Path]) -> list[list[str]]:
 def create_grid(puzzle: str) -> list[list[str]]:
     """Создать двумерную сетку судоку из строки puzzle."""
     digits = [c for c in puzzle if c in "123456789."]
+    # добавить точки до 81 символа
+    digits += ["."] * (81 - len(digits))
     return group(digits, 9)
 
 
