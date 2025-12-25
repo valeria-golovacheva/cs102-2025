@@ -1,10 +1,20 @@
+"""
+Графический интерфейс для игры "Жизнь" (Conway's Game of Life) на pygame.
+
+Реализовано:
+- отрисовка клеток
+- сетка
+- пауза/возобновление игры
+- редактирование клеток на паузе
+"""
 import pygame
+
 from life import GameOfLife
-from pygame.locals import *
 from ui import UI
 
 
 class GUI(UI):
+    """Графический интерфейс игры «Жизнь» с pygame."""
     def __init__(self, life: GameOfLife, cell_size: int = 10, speed: int = 10) -> None:
         super().__init__(life)
         self.cell_size = cell_size
@@ -39,7 +49,7 @@ class GUI(UI):
 
     def run(self) -> None:
         """Запустить игру."""
-        pygame.init()  # ← ВАЖНО
+        pygame.init()
         clock = pygame.time.Clock()
         running = True
 
@@ -49,16 +59,13 @@ class GUI(UI):
                     running = False
 
                 elif event.type == pygame.KEYDOWN:
-                    """Обработка нажатий клавиш"""
+                    # Обработка нажатий клавиш
                     if event.key == pygame.K_SPACE:
                         self.paused = not self.paused
                         print(f"Пауза: {'ВКЛ' if self.paused else 'ВЫКЛ'}")
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    """
-                        Обработка клика мыши.
-                        Во время паузы позволяет изменять состояние клеток.
-                        """
+                    # Обработка клика мыши. Во время паузы позволяет изменять состояние клеток.
                     if self.paused and event.button == 1:
                         mouse_x, mouse_y = event.pos
                         col = mouse_x // self.cell_size
@@ -73,8 +80,8 @@ class GUI(UI):
 
             if not self.paused:
                 """
-                    Если игра не на паузе, вычисляем следующее поколение клеток
-                    """
+                Если игра не на паузе, вычисляем следующее поколение клеток
+                """
                 self.life.step()
 
                 if self.life.is_max_generations_exceeded:
@@ -87,8 +94,9 @@ class GUI(UI):
             pygame.display.flip()
             clock.tick(self.speed)
 
-        pygame.quit()  # ← ВАЖНО
+        pygame.quit()
         print("Игра завершена.")
+
 
 if __name__ == "__main__":
     game = GameOfLife(size=(50, 50))
