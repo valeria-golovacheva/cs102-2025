@@ -8,7 +8,6 @@
 - редактирование клеток на паузе
 """
 import pygame
-
 from life import GameOfLife
 from ui import UI
 
