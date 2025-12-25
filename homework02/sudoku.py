@@ -27,12 +27,7 @@ def display(grid: list[list[str]]) -> None:
     width = 2
     line = "+".join(["-" * (width * 3)] * 3)
     for row in range(9):
-        print(
-            "".join(
-                grid[row][col].center(width) + ("|" if col in (2, 5) else "")
-                for col in range(9)
-            )
-        )
+        print("".join(grid[row][col].center(width) + ("|" if col in (2, 5) else "") for col in range(9)))
         if row in (2, 5):
             print(line)
     print()
@@ -60,11 +55,7 @@ def get_block(grid: list[list[str]], pos: tuple[int, int]) -> list[str]:
     row, col = pos
     start_row = (row // 3) * 3
     start_col = (col // 3) * 3
-    return [
-        grid[r][c]
-        for r in range(start_row, start_row + 3)
-        for c in range(start_col, start_col + 3)
-    ]
+    return [grid[r][c] for r in range(start_row, start_row + 3) for c in range(start_col, start_col + 3)]
 
 
 def find_empty_positions(grid: list[list[str]]) -> tp.Optional[tuple[int, int]]:
@@ -111,11 +102,7 @@ def check_solution(solution: list[list[str]]) -> bool:
 
     for row in (0, 3, 6):
         for col in (0, 3, 6):
-            block = [
-                solution[r][c]
-                for r in range(row, row + 3)
-                for c in range(col, col + 3)
-            ]
+            block = [solution[r][c] for r in range(row, row + 3) for c in range(col, col + 3)]
             if set(block) != DIGITS:
                 return False
 
